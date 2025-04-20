@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "curso_sql",
+            "group": "tek",
+            "database": "curso_de_sql",
+            "username": "curso_sql"
+        }
+    ]
+}
