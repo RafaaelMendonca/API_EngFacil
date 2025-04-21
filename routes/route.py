@@ -1,9 +1,10 @@
-from flask import request, jsonify
+from flask import request, jsonify, session
 from controllers.cadastro import UsuarioController
 from controllers.login import LoginController
 from middlewares.exceptions import CadastroInvalido, CamposNaoPreenchidos, UsuarioOuSenhaIncorretos
 from main import app
 from models.usuario import Usuario
+from models.banco import Projeto
 
 @app.route('/')
 def listar_usuarios():
@@ -51,12 +52,47 @@ def login():
         dados.get('senha')
         )
     if login_usuario.validar_login():
+      usuario = Usuario.get(Usuario.email == dados.get('email'))
+      session['usuario_id'] = usuario.id
       return jsonify({'mensagem': 'Login realizado com sucesso!'}), 200
   except CamposNaoPreenchidos as e:
     return jsonify({"message": str(e)}), 400
   except UsuarioOuSenhaIncorretos as e:
     return jsonify({'mensagem': str(e)}), 401
 
+@app.route('/logout')
+def logout():
+  session.clear()
+  return jsonify({'mensagem': 'Usuario desconectado'})
+
+# --------------- painel ---------------
+
 @app.route('/painel', methods=['GET'])
 def painel():
-    return jsonify({"projetos": "sucesso"}), 200
+    usuario_id = session.get('usuario_id')
+
+    if not usuario_id:
+        return jsonify({'mensagem': 'Usuário não está logado'}), 401
+
+    try:
+        usuario = Usuario.get_by_id(usuario_id)
+        projetos = Projeto.select().where(Projeto.usuario == usuario)
+
+        lista_projetos = []
+        #adicionar o restante do banco, sao 13 se nao me engano
+        """
+        for p in projetos:
+            lista_projetos.append({
+                'nome_projeto': p.nome_projeto,
+                'custo_planejado': float(p.custo_planejado),
+                'custo_real': float(p.custo_real),
+                'duracao_planejada': p.duracao_planejada,
+                'duracao_real': p.duracao_real,
+                'horas_trabalhadas': p.horas_trabalhadas
+            })
+        """
+
+        return jsonify(lista_projetos), 200
+
+    except Usuario.DoesNotExist:
+        return jsonify({'mensagem': 'Usuário inválido'}), 400

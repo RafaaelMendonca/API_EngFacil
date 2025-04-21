@@ -2,13 +2,15 @@ from flask import Flask
 from models.banco import db
 from models.usuario import Usuario
 
+
 app = Flask(__name__)
 
+app.secret_key = 'chave-secreta-top-do-rafael'
 # SEMPRE IMPORTAR APÓS O APP
 from routes.route import *
 
 def inicializar_tabelas():
-    db.create_tables([Usuario], safe=True)
+    db.create_tables([Usuario, Projeto], safe=True)
     print("Tabelas criadas com sucesso!")
 
 @app.before_request
