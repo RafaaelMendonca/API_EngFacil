@@ -3,14 +3,16 @@ from middlewares.exceptions import *
 from models.usuario import Usuario
 
 class UsuarioController: 
-    def __init__(self, nome, email, senha, confirmacao_senha):
-        if not nome or not email or not senha or not confirmacao_senha:
+    def __init__(self, nome:str, email:str, senha:str, confirmacao_senha:str):
+
+        campos = [nome, email, senha, confirmacao_senha]
+        if any(campo is None for campo in campos):
             raise CamposNaoPreenchidos('Todos os campos devem ser preenchidos')
 
         self.nome = nome
-        self.email = str(email)
-        self.senha = str(senha)
-        self.confirmacao_senha = str(confirmacao_senha)
+        self.email = email
+        self.senha = senha
+        self.confirmacao_senha = confirmacao_senha
 
         # Começar as validações
         

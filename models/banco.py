@@ -1,16 +1,9 @@
 from peewee import *
+from usuario import Usuario
 db = SqliteDatabase('cadastro.db')
 
-class Usuario(Model):
-    nome = CharField()
-    email = CharField(unique=True)
-    senha = CharField()
-
-    class Meta:
-        database=db
-
 class Projeto(Model):
-     nome_projeto = TextField()
+     nome_projeto = TextField(unique=True)
      custo_planejado = DecimalField(decimal_places=2, max_digits=12) # com maximo de digitos 12, chegaremos até a casa do bilhao
      custo_real = DecimalField(decimal_places=2, max_digits=12)
      duracao_planejada = IntegerField()
